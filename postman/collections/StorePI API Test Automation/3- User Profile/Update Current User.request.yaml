@@ -1,0 +1,22 @@
+$kind: http-request
+method: PATCH
+url: '{{baseUrl}}/users/current'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Updated Test Student"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Profile update returns the requested name', function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+          const data = pm.response.json().data;
+          const user = Array.isArray(data) ? data[0] : data;
+          pm.expect(user?.name).to.equal('Updated Test Student');
+      });

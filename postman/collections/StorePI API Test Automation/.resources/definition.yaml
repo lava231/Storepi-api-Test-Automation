@@ -1,0 +1,3 @@
+$kind: collection
+name: StorePI API Test Automation
+description: Smoke and contract tests for the public StorePI catalog.

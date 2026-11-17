@@ -1,0 +1,15 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/purchases'
+order: 3000
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Created purchase is listed in the current user history', function () {
+          pm.response.to.have.status(200);
+          const purchaseId = pm.environment.get('purchase_id');
+          pm.expect(purchaseId, 'created purchase ID').to.match(/^[1-9][0-9]*$/);
+          const purchases = pm.response.json().data;
+          pm.expect(purchases, 'purchase history').to.be.an('array');
+          pm.expect(purchases.some(purchase => String(purchase.id) === purchaseId)).to.equal(true);
+      });

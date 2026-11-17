@@ -1,0 +1,30 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/purchases'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "products": {{checkout_products}}
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.variables.get('checkout_products')) {
+          pm.execution.skipRequest();
+      }
+  - type: afterResponse
+    code: |-
+      pm.test('Checkout creates a purchase for the test account', function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+          const purchases = pm.response.json().data;
+          pm.expect(purchases, 'created purchases').to.be.an('array').with.lengthOf(1);
+          const purchase = purchases[0];
+          pm.expect(purchase.user_id).to.equal(pm.variables.get('checkout_user_id'));
+          pm.expect(Number.isSafeInteger(purchase.id) && purchase.id > 0, 'positive purchase ID').to.equal(true);
+          pm.variables.set('checkout_purchase_id', String(purchase.id));
+      });

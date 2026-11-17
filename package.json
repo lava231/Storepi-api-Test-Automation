@@ -1,0 +1,14 @@
+{
+  "name": "storepi-api-test-automation",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "test": "node scripts/run-newman.cjs",
+    "test:auth": "node scripts/run-newman.cjs --auth-data"
+  },
+  "devDependencies": {
+    "newman": "6.2.3",
+    "newman-reporter-htmlextra": "1.23.1",
+    "yaml": "2.9.1"
+  }
+}

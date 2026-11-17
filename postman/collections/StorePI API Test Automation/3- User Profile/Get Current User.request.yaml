@@ -1,0 +1,13 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/users/current'
+order: 1000
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Current profile belongs to the registered user', function () {
+          pm.response.to.have.status(200);
+          const user = pm.response.json().data;
+          pm.expect(user?.id, 'user ID').to.exist;
+          pm.expect(user.name, 'original name').to.equal('QA Student');
+      });

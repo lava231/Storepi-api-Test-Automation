@@ -1,0 +1,35 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/reviews'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{access_token}}'
+body:
+  type: json
+  content: |-
+    {
+      "product_id": 1,
+      "content": "StorePI automated review",
+      "rating": 5
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      pm.environment.unset('review_id');
+  - type: afterResponse
+    code: |-
+      pm.test('Review is created for product 1', function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+          const review = pm.response.json().data;
+          pm.expect(review?.content).to.equal('StorePI automated review');
+          pm.expect(review.rating).to.equal(5);
+          pm.expect(review.product_id).to.equal(1);
+          pm.expect(review.id).to.be.a('number');
+          pm.environment.set('review_id', String(review.id));
+      });

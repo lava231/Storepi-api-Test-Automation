@@ -1,0 +1,24 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/users/current/wishlist'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "product_id": 3
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Wishlist update contains product 3', function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+          const wishlists = pm.response.json().data;
+          pm.expect(wishlists, 'wishlist response data').to.be.an('array');
+          const products = wishlists[0]?.wishlist_products;
+          pm.expect(products, 'wishlist_products').to.be.an('array');
+          pm.expect(products.some(product => product.product_id === 3), 'product 3 is listed').to.equal(true);
+      });

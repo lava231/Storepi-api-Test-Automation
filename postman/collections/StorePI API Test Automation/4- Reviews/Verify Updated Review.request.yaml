@@ -1,0 +1,18 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/users/current/reviews'
+order: 4000
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Updated review persists for the current user', function () {
+          pm.response.to.have.status(200);
+          const reviews = pm.response.json().data;
+          pm.expect(reviews).to.be.an('array');
+          const reviewId = pm.environment.get('review_id');
+          pm.expect(reviewId, 'created review ID').to.match(/^[1-9][0-9]*$/);
+          const review = reviews.find(item => String(item.id) === reviewId);
+          pm.expect(review, 'created review').to.exist;
+          pm.expect(review.content).to.equal('StorePI updated automated review');
+          pm.expect(review.rating).to.equal(4);
+      });

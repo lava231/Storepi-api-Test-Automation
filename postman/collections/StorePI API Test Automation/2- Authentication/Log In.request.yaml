@@ -1,0 +1,30 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/login'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "{{email}}",
+      "password": "{{password}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      pm.environment.set('access_token', '');
+  - type: afterResponse
+    code: |-
+      pm.test('Login returns a JWT for the registered user', function () {
+          pm.response.to.have.status(200);
+          const session = pm.response.json().data;
+          const requestedEmail = pm.variables.replaceIn(JSON.parse(pm.request.body.raw).email);
+          pm.expect(session?.user?.email, 'session user email').to.equal(requestedEmail);
+          const token = session?.access_token;
+          pm.expect(token, 'access token').to.be.a('string');
+          pm.expect(token).to.match(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
+          pm.environment.set('access_token', token);
+      });

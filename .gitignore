@@ -1,0 +1,22 @@
+/node_modules/
+/.pnpm-store/
+
+# Local runner output
+/.postman/logs/
+/newman/
+/postman-cli-reports/
+/outputs/
+/reports/
+/StorePI_Newman_*.html
+*.log
+
+# Legacy exports can contain runtime values
+*.postman_collection.json
+*.postman_environment.json
+
+# Local credentials and OS files
+.env
+.env.*
+!.env.example
+Thumbs.db
+.DS_Store

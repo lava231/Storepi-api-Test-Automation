@@ -1,0 +1,8 @@
+$kind: collection
+description: Run this folder in order with StorePI QA selected. It creates a fresh test account and verifies a purchase made from that account's cart.
+order: 8000
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{checkout_access_token}}'

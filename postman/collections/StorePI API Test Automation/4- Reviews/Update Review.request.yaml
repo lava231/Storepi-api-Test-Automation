@@ -1,0 +1,20 @@
+$kind: http-request
+method: PATCH
+url: "{{baseUrl}}/reviews/{{review_id}}"
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "content": "StorePI updated automated review",
+      "rating": 4
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Review update returns HTTP 200', function () {
+          pm.response.to.have.status(200);
+      });

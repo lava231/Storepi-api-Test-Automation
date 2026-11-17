@@ -1,0 +1,29 @@
+$kind: collection
+scripts:
+  - type: http:afterResponse
+    code: |-
+      pm.test('Returns HTTP 200', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('Returns JSON', function () {
+          pm.response.to.be.json;
+      });
+
+      pm.test('Returns a count and a data array', function () {
+          const body = pm.response.json();
+          pm.expect(body).to.be.an('object');
+          pm.expect(body.data, 'data').to.be.an('array');
+          pm.expect(Number.isInteger(body.count), 'count is an integer').to.equal(true);
+          pm.expect(body.count, 'count covers the returned page').to.be.at.least(body.data.length);
+      });
+
+      pm.test('Responds in under 1500 ms', function () {
+          pm.expect(pm.response.responseTime).to.be.below(1500);
+      });
+    language: text/javascript
+auth:
+  - id: ""
+    type: noauth
+    name: No Auth
+order: 1000

@@ -1,0 +1,23 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/purchases/{{checkout_purchase_id}}'
+order: 6000
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.variables.get('checkout_purchase_id')) {
+          pm.execution.skipRequest();
+      }
+  - type: afterResponse
+    code: |-
+      pm.test('Saved purchase matches the checkout account and cart', function () {
+          pm.response.to.have.status(200);
+          const purchases = pm.response.json().data;
+          pm.expect(purchases, 'matching purchases').to.be.an('array').with.lengthOf(1);
+          const purchase = purchases[0];
+          pm.expect(String(purchase.id)).to.equal(pm.variables.get('checkout_purchase_id'));
+          pm.expect(purchase.user_id).to.equal(pm.variables.get('checkout_user_id'));
+          pm.expect(purchase.purchase_products, 'purchase products').to.be.an('array');
+          const products = purchase.purchase_products.map(({ product_id, quantity }) => ({ product_id, quantity }));
+          pm.expect(products).to.deep.equal(JSON.parse(pm.variables.get('checkout_products')));
+      });

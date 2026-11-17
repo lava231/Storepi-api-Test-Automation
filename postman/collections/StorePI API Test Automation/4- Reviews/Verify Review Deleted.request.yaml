@@ -1,0 +1,18 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/users/current/reviews'
+order: 6000
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Deleted review is absent from current user reviews', function () {
+          pm.response.to.have.status(200);
+          const reviews = pm.response.json().data;
+          pm.expect(reviews).to.be.an('array');
+          const reviewId = pm.environment.get('review_id');
+          pm.expect(reviewId, 'created review ID').to.match(/^[1-9][0-9]*$/);
+          for (const review of reviews) {
+              pm.expect(review.id, 'listed review ID').to.be.a('number');
+          }
+          pm.expect(reviews.some(review => String(review.id) === reviewId), 'created review is still listed').to.equal(false);
+      });

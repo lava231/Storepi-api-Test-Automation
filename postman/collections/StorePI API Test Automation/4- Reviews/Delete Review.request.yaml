@@ -1,0 +1,10 @@
+$kind: http-request
+method: DELETE
+url: '{{baseUrl}}/reviews/{{review_id}}'
+order: 5000
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Review deletion returns HTTP 204', function () {
+          pm.response.to.have.status(204);
+      });

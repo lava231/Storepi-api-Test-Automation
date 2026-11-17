@@ -1,0 +1,26 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/users/current/cart'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "product_id": 1,
+      "quantity": 2
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Cart update returns product 1 with quantity 2', function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+          const data = pm.response.json().data;
+          const cart = Array.isArray(data) ? data[0] : data;
+          const products = cart?.cart_products;
+          pm.expect(products, 'cart_products').to.be.an('array');
+          const product = products.find(item => item.product_id === 1);
+          pm.expect(product?.quantity, 'quantity of product 1').to.equal(2);
+      });

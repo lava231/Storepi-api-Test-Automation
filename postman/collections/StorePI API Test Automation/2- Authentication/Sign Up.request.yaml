@@ -1,0 +1,30 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/signup'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "QA Student",
+      "email": "{{email}}",
+      "password": "{{password}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      pm.environment.set('access_token', '');
+      const id = pm.variables.replaceIn('{{$guid}}');
+      pm.environment.set('email', 'storepi_qa_' + id + '@example.com');
+      pm.environment.set('password', 'Qa1!' + pm.variables.replaceIn('{{$guid}}'));
+  - type: afterResponse
+    code: |-
+      pm.test('Signup returns the registered user', function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+          const user = pm.response.json().data?.user;
+          pm.expect(user?.id, 'user ID').to.be.a('string').and.not.empty;
+          pm.expect(user.email).to.equal(pm.environment.get('email'));
+      });

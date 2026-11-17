@@ -1,0 +1,18 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/users/current/cart'
+order: 4000
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Checkout account has two units of product 1 in its cart', function () {
+          pm.response.to.have.status(200);
+          const data = pm.response.json().data;
+          const cart = Array.isArray(data) ? data[0] : data;
+          pm.expect(cart?.user_id).to.equal(pm.variables.get('checkout_user_id'));
+          pm.expect(cart.cart_products, 'cart items').to.be.an('array').with.lengthOf(1);
+          const { product_id, quantity } = cart.cart_products[0];
+          pm.expect(product_id).to.equal(1);
+          pm.expect(quantity).to.equal(2);
+          pm.variables.set('checkout_products', JSON.stringify([{ product_id, quantity }]));
+      });

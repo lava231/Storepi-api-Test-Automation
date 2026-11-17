@@ -1,0 +1,16 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/users/current/cart'
+order: 2000
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Product 1 persists in the cart with quantity 2', function () {
+          pm.response.to.have.status(200);
+          const data = pm.response.json().data;
+          const cart = Array.isArray(data) ? data[0] : data;
+          const products = cart?.cart_products;
+          pm.expect(products, 'cart_products').to.be.an('array');
+          const product = products.find(item => item.product_id === 1);
+          pm.expect(product?.quantity, 'quantity of product 1').to.equal(2);
+      });

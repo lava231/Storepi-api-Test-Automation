@@ -1,0 +1,29 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/login'
+order: 2000
+auth:
+  type: noauth
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "{{checkout_email}}",
+      "password": "{{checkout_password}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Login returns a JWT for the checkout account', function () {
+          pm.response.to.have.status(200);
+          const data = pm.response.json().data;
+          const session = data?.session ?? data;
+          pm.expect(session?.user?.id).to.equal(pm.variables.get('checkout_user_id'));
+          const token = session?.access_token;
+          pm.expect(token).to.be.a('string');
+          pm.expect(token).to.match(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
+          pm.variables.set('checkout_access_token', token);
+      });

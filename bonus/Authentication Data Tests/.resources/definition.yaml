@@ -1,0 +1,5 @@
+$kind: collection
+name: StorePI Authentication Data Tests
+description: Run with authentication_test_data.csv and the StorePI QA environment.
+auth:
+  type: noauth

@@ -1,0 +1,14 @@
+name: StorePI QA
+values:
+  - key: baseUrl
+    value: 'https://storepi.vercel.app/api/v1'
+  - key: email
+    value: ''
+  - key: password
+    value: ''
+  - key: access_token
+    value: ''
+  - key: review_id
+    value: ''
+  - key: purchase_id
+    value: ''

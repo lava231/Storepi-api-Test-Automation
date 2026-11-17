@@ -1,0 +1,4 @@
+email,password,expectedStatus,scenario
+candace@example.com,password,200,Valid demo credentials
+candace@example.com,WrongPassword!,400,Incorrect password
+,password,400,Missing email

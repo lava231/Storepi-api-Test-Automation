@@ -1,0 +1,39 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/login'
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {{login_body}}
+scripts:
+  - type: beforeRequest
+    code: |-
+      const email = pm.iterationData.get('email');
+      const password = pm.iterationData.get('password');
+      const body = { password };
+      if (email) {
+          body.email = email;
+      }
+      pm.variables.set('login_body', JSON.stringify(body));
+  - type: afterResponse
+    code: |-
+      const scenario = pm.iterationData.get('scenario');
+      const expectedStatus = Number(pm.iterationData.get('expectedStatus'));
+      const response = pm.response.json();
+      const session = response.data?.session ?? response.data;
+      pm.test(scenario + ' returns HTTP ' + expectedStatus, function () {
+          pm.expect(pm.response.code).to.equal(expectedStatus);
+      });
+      if (expectedStatus === 200) {
+          pm.test(scenario + ' returns a token for the demo user', function () {
+              pm.expect(session?.user?.email).to.equal(pm.iterationData.get('email'));
+              pm.expect(session?.access_token, 'access token').to.be.a('string').and.not.empty;
+          });
+      } else {
+          pm.test(scenario + ' returns no session token', function () {
+              pm.expect(session?.access_token).to.equal(undefined);
+          });
+      }

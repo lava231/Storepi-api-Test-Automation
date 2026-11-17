@@ -1,0 +1,15 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/reviews'
+order: 1000
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Reviews list has a count and data array', function () {
+          pm.response.to.have.status(200);
+          const body = pm.response.json();
+          pm.expect(body.data).to.be.an('array');
+          pm.expect(body.count).to.be.a('number');
+      });

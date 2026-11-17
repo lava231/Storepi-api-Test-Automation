@@ -1,0 +1,12 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/users/current'
+order: 3000
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Updated profile persists', function () {
+          pm.response.to.have.status(200);
+          const user = pm.response.json().data;
+          pm.expect(user?.name).to.equal('Updated Test Student');
+      });

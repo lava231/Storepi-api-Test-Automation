@@ -1,0 +1,6 @@
+$kind: collection
+order: 2000
+auth:
+  - id: ""
+    type: noauth
+    name: No Auth

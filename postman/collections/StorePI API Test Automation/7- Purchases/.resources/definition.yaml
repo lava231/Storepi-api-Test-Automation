@@ -1,0 +1,8 @@
+$kind: collection
+description: Create a test purchase, retrieve it by ID, and verify it appears in purchase history.
+order: 7000
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{access_token}}'

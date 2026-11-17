@@ -1,0 +1,17 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/purchases/{{purchase_id}}'
+order: 2000
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Saved purchase has the requested product and quantity', function () {
+          pm.response.to.have.status(200);
+          const purchases = pm.response.json().data;
+          pm.expect(purchases, 'matching purchases').to.be.an('array').with.lengthOf(1);
+          const purchase = purchases[0];
+          pm.expect(String(purchase.id)).to.equal(pm.environment.get('purchase_id'));
+          pm.expect(purchase.purchase_products, 'purchase products').to.be.an('array');
+          const product = purchase.purchase_products.find(item => item.product_id === 1);
+          pm.expect(product?.quantity, 'quantity of product 1').to.equal(2);
+      });
